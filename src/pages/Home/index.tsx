@@ -1,8 +1,7 @@
 import { FC } from "react";
-import { Login } from "../Auth/Login";
 
 const Home: FC = () => {
-  return <Login/>;
+  return <h1>Hello Chinh!</h1>
 };
 
 export default Home;

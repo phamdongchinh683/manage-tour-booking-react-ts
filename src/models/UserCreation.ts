@@ -1,6 +1,6 @@
-export interface User {
- _id: string;
+export interface UserCreation {
  username: string;
+ password: string;
  fullName: {
    firstName: string;
    lastName: string;
@@ -12,4 +12,6 @@ export interface User {
    phone: string;
  };
  role_id: string;
+ createdAt: string;
+ updatedAt: string;
 }

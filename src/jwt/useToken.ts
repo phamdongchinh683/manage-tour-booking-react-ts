@@ -1,27 +1,41 @@
 import { useEffect, useState } from "react";
 
-function useToken() {
-  const [token, setToken] = useState<string | null>(null); 
+interface UseTokenReturn {
+  token: string | null;
+  setToken: (newToken: string) => void;
+  deleteToken: () => void;
+  isAuthenticated: () => boolean;
+}
+
+function useToken(): UseTokenReturn {
 
   const getToken = (): string | null => {
     return localStorage.getItem("token");
   };
 
-  const deleteToken = () => {
-    localStorage.removeItem("token");
-    setToken(null); 
+  const [token, setTokenState] = useState<string | null>(getToken());
+
+  const setToken = (newToken: string) => {
+    localStorage.setItem("token", newToken);
+    setTokenState(newToken);
   };
 
-  const isAuthenticated = () => {
-    return !!getToken(); 
+  const deleteToken = () => {
+    localStorage.removeItem("token");
+    setTokenState(null);
+  };
+
+  const isAuthenticated = (): boolean => {
+    return !!getToken();
   };
 
   useEffect(() => {
-    setToken(getToken()); 
+    setTokenState(getToken());
   }, []);
 
   return {
-   token,  
+    token,
+    setToken,
     deleteToken,
     isAuthenticated,
   };

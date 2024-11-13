@@ -8,23 +8,20 @@ export const Login: FC = () => {
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [error, setError] = useState<string | null>(null);
-
   const { adminLogin } = UserService();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null); 
-
     const loginData: AdminLogin = { username, password };
-
     try {
       await adminLogin(loginData);
+      window.location.reload();
       alert("Login successful!");
     } catch (err) {
       setError("Invalid username or password.");
     }
   };
-
   return (
     <Form onSubmit={handleLogin}>
       <Form.Group className="mb-3" controlId="formBasicUsername">
@@ -35,9 +32,6 @@ export const Login: FC = () => {
           value={username}
           onChange={(e) => setUsername(e.target.value)}
         />
-        <Form.Text className="text-muted">
-          We'll never share your username with anyone else.
-        </Form.Text>
       </Form.Group>
       <Form.Group className="mb-3" controlId="formBasicPassword">
         <Form.Label>Password</Form.Label>

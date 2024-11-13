@@ -1,41 +1,65 @@
-import { FC, useEffect, useState } from 'react';
+import { ChangeEvent, FC, useEffect, useRef, useState } from 'react';
 import Table from 'react-bootstrap/Table';
+import { UsersResponse } from '../../../../models/UsersReponse';
 import { UserService } from '../../../../services/User';
 
 export const UserList: FC = () => {
   const { getUsers } = UserService();
-  const [list, setList] = useState<any[]>([]);  
-  const [loading, setLoading] = useState<boolean>(true); 
+  const [list, setList] = useState<UsersResponse[]>([]);
+  const checkCall = useRef(false);
+  const [checkedUsers, setCheckedUsers] = useState<{ [key: string]: boolean }>({});
+  const [selectAll, setSelectAll] = useState<boolean>(false);
 
-  useEffect(() => {
-    let mounted = true;  
-    getUsers()
-      .then((items) => {
-        if (mounted) {
-          setList(items); 
-          setLoading(false); 
-        }
-      })
-      .catch((error) => {
-        console.error("Error fetching users", error);
-        setLoading(false);  
-      });
+  const getAllUser = async () => {
+    if (!checkCall.current) {
+        checkCall.current = true;
+        const users = await getUsers();
+        setList(users);
+    }
+};
 
-    return () => {
-      mounted = false;
-    };
-  }, []);  
+useEffect(() => {
+  getAllUser();
+}, []);
 
-  if (loading) {
-    return <div>Loading...</div>;  
+  const handleCheckboxChange = (e: ChangeEvent<HTMLInputElement>, userId: string) => {
+    setCheckedUsers((prev) => ({
+      ...prev,
+      [userId]: e.target.checked,
+    }));
+  };
+
+  const handleSelectAllChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const isChecked = e.target.checked;
+    setSelectAll(isChecked);
+    setCheckedUsers((prev) =>
+      Object.fromEntries(Object.keys(prev).map((key) => [key, isChecked]))
+    );
+  };
+
+  const getSelectedUsers = () => {
+    const selectedUsers = Object.keys(checkedUsers)
+      .filter((userId) => checkedUsers[userId]) 
+      .map((userId) => ({ _id: userId })); 
+    return { users: selectedUsers };
+  };
+
+  if (list.length === 0) {
+    return <div>Loading...</div>;
   }
-
 
   return (
     <Table striped bordered hover>
       <thead>
         <tr>
-          <th>#</th>
+          <th>
+            <input
+              type="checkbox"
+              checked={selectAll}
+              onChange={handleSelectAllChange}
+            />
+             Select All
+          </th>
           <th>First Name</th>
           <th>Last Name</th>
           <th>Username</th>
@@ -45,9 +69,15 @@ export const UserList: FC = () => {
         </tr>
       </thead>
       <tbody>
-        {list.map((user, index) => (
-          <tr key={user.id}> 
-            <td>{index + 1}</td>
+        {list.map((user) => (
+          <tr key={user._id}>
+            <td>
+              <input
+                type="checkbox"
+                checked={checkedUsers[user._id] || false}
+                onChange={(e) => handleCheckboxChange(e, user._id)}
+              />
+            </td>
             <td>{user.fullName.firstName}</td>
             <td>{user.fullName.lastName}</td>
             <td>{user.username}</td>

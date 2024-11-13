@@ -1,32 +1,16 @@
 import axios, { AxiosResponse } from "axios";
-import { AdminLogin } from "../../models/AdminLogin";
-import { LoginResponse } from "../../models/TokenResponse";
 import { UserCreation } from "../../models/UserCreation";
 
-export function UserService() {
+export function RoleService() {
 
-  const adminLogin = async (loginData: AdminLogin): Promise<string> => {
-    try {
-      const response = await axios.post<LoginResponse>(
-        process.env.REACT_APP_ADMIN_LOGIN || "",
-        loginData 
-      );
-      const token = response.data.data;
-      localStorage.setItem("token", token);
-      return token;
-    } catch (err) {
-      throw err;
-    }
-  };
-
-  const getUsers = async () =>{
+  const getRoles = async () =>{
    try {
     const token = localStorage.getItem("token");
     if (!token) {
      throw new Error("Unauthorized. Please log in.");
    }
     const response = await axios.get(
-      process.env.REACT_APP_GET_USERS || "",
+      process.env.REACT_APP_GET_ROLES || "",
       {
        headers: {
         token: `${token}`,
@@ -39,7 +23,7 @@ export function UserService() {
   }
   }
 
-  const AddUsers = async (data: UserCreation[]): Promise<string> => {
+  const addRole = async (data: UserCreation[]): Promise<string> => {
     try {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -60,21 +44,18 @@ export function UserService() {
     }
   };
 
-  const updateUser = async () =>{
+  const updateRole = async () =>{
 
   }
 
-  const deleteUSer = async () =>{
+  const deleteRole = async () =>{
 
   }
-
-
 
   return {
-    AddUsers,
-    updateUser,
-    deleteUSer,
-    adminLogin,
-    getUsers
-  };
+   getRoles,
+   addRole,
+   updateRole,
+   deleteRole 
+   };
 }

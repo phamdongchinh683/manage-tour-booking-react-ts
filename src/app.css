@@ -1,0 +1,20 @@
+body {
+ @include font-website("sans-serif");
+ margin: 0;
+ padding: 0;
+}
+
+.container-body {
+ display: flex;
+ flex-direction: column;
+ min-height: 100vh;
+}
+
+main {
+ margin-top: 6rem;
+}
+
+
+footer {
+ margin-top: auto;
+}
